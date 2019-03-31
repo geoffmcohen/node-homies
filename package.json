@@ -1,0 +1,24 @@
+{
+  "name": "node-homies",
+  "version": "1.0.0",
+  "description": "Node implementation of Vegan Homies",
+  "main": "main.js",
+  "dependencies": {
+    "ejs": "^2.6.1",
+    "express": "^4.16.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/geoffmcohen/node-homies.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/geoffmcohen/node-homies/issues"
+  },
+  "homepage": "https://github.com/geoffmcohen/node-homies#readme"
+}
