@@ -1,5 +1,5 @@
 // Function used to insert a new post into the database
-function insertBlogPost(title, body, imgLink = null, entryTime = Date.now()){
+exports.insertBlogPost = function(title, body, imgLink = null, entryTime = Date.now()){
   console.log("Publishing blog post ''%s'...", title);
 
   // Connect to the database
@@ -10,8 +10,8 @@ function insertBlogPost(title, body, imgLink = null, entryTime = Date.now()){
     if(err){
       console.log("Unable to connect to MongoDB!!!");
       throw err;
-    }
 
+    }
     // Create the blog post object
     var dbo = db.db();
     var blogPost = {title: title, body: body, entryTime: entryTime};
@@ -30,7 +30,7 @@ function insertBlogPost(title, body, imgLink = null, entryTime = Date.now()){
 
 // Function to retrieve blog posts
 // TODO: Add paging as inputs to this function
-function getBlogPosts(callback) {
+exports.getBlogPosts = function(callback) {
   // Connect to the database
   var MongoClient = require('mongodb').MongoClient;
   var mongoURI = process.env.MONGOLAB_URI;
@@ -47,11 +47,11 @@ function getBlogPosts(callback) {
         console.log("Unable to get collection blog!!!");
         throw err;
       }
-      // Find all records
-      coll.find(function(err, items){
+      // Find all records sorted last to first
+      coll.find({}, {sort:{entryTime: -1}}, function(err, items){
         if(err){
-          console.log("Unable to execute find on blog collection");
           throw err;
+          console.log("Unable to execute find on blog collection");
         }
         // Convert the cursor to an array and return
         items.toArray(function(err, arr){
@@ -63,6 +63,9 @@ function getBlogPosts(callback) {
   });
 }
 
-// Exports section
-exports.insertBlogPost = insertBlogPost;
-exports.getBlogPosts = getBlogPosts;
+//
+exports.formatBodyText = function(bodyText){
+  var body = bodyText;
+  body = body.replace('<p>', '%><p><%');
+  return body;
+}

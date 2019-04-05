@@ -9,9 +9,7 @@ app.listen(port);
 
 // Testing stuff here - DELETEME
 // var blog = require("./modules/blog.js");
-// // blog.insertBlogPost("Test Post", "This is a test blog post about nothing.");
-//
-// // Need to do a callback here somehow
+// blog.insertBlogPost("Test Post 2", "This is a second blog post.");
 // blog.getBlogPosts(function(err, blogPosts){
 //   console.log(blogPosts);
 // });
@@ -30,22 +28,24 @@ MongoClient.connect(mongoURI, {useNewUrlParser: true}, function(err, db){
 });
 
 // Route blog requests to blog page
-// FIXME: This was working but not now???
 app.get('/blog', function(req, res){
-    app.render('blog.html', function(err, renderedData){
+  var blog = require("./modules/blog.js");
+  var dateformat = require('dateformat');
+
+  // Retreive the blog posts from the database
+  blog.getBlogPosts(function(err, blogPosts){
       if(err){
-        res.send(renderedData);
         console.log(err);
+        // TODO: Figure out what to send back in case of error
+        res.status(500);
       }
-    });
+
+      // Display the page with the posts
+      res.render('blog.html', {blog: blog, blogPosts: blogPosts, dateformat: dateformat});
+  });
 });
 
 // Route all other requests to coming soon page
 app.get('*', function(req, res){
-  app.render('coming_soon.html', function(err, renderedData){
-      res.send(renderedData);
-      if(err){
-        console.log(err);
-      }
-  })
+  res.render('coming_soon.html');
 });

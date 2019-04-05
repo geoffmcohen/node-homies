@@ -4,6 +4,16 @@
     <title>Vegan Homies Blog</title>
   </head>
   <body>
-    <h1>Vegan Homies Blog is coming soon!!!</h1>
+    <h1>Vegan Homies Blog</h1>
+    <%
+      for(var blogPost of blogPosts){
+    %>
+        <hr>
+        <h3><%= dateformat(blogPost.entryTime) %></h3>
+        <h2><%= blogPost.title %></h2>
+        <%- blogPost.body %>
+    <%
+      }
+    %>
   </body>
 </html>
