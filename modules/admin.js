@@ -27,21 +27,21 @@ exports.createAdminUser = function(username, password){
         if(count > 0){
           console.log("Admin User '%s' already exists!!!", username);
           throw new Error("Cannot create '" + username + "', user already exists!");
+        } else {
+          // Create the user object and hash the password
+          var adminUser = {username: username};
+          const bcrypt = require('bcrypt');
+          adminUser.passwordHash = bcrypt.hashSync(password, 10);
+
+          // Insert the user into the database
+          dbo.collection("adminUsers").insertOne(adminUser, function(err, res){
+              if(err) throw err;
+              console.log("Succesfully created adminUser '%s'.", username);
+          });
+          db.close();
         }
       });
     });
-
-    // Create the user object and hash the password
-    var adminUser = {username: username};
-    const bcrypt = require('bcrypt');
-    adminUser.passwordHash = bcrypt.hashSync(password, 10);
-
-    // Insert the user into the database
-    dbo.collection("adminUsers").insertOne(adminUser, function(err, res){
-        if(err) throw err;
-        console.log("Succesfully created adminUser '%s'.", username);
-    });
-    db.close();
   });
 }
 
