@@ -10,7 +10,6 @@ exports.insertBlogPost = function(title, body, imgLink = null, entryTime = Date.
     if(err){
       console.log("Unable to connect to MongoDB!!!");
       throw err;
-
     }
     // Create the blog post object
     var dbo = db.db();
@@ -50,8 +49,8 @@ exports.getBlogPosts = function(callback) {
       // Find all records sorted last to first
       coll.find({}, {sort:{entryTime: -1}}, function(err, items){
         if(err){
-          throw err;
           console.log("Unable to execute find on blog collection");
+          throw err;
         }
         // Convert the cursor to an array and return
         items.toArray(function(err, arr){
