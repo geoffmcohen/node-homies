@@ -4,6 +4,18 @@
     <title>Vegan Homies Admin Page</title>
   </head>
   <body>
-    <h1><%= session.adminUser %>, Welcome to the Admin Page</h1>
+    <h1>Welcome to the Admin Page, <%= session.adminUser %></h1>
+    <% if (flash) {%><%= flash %><% } %>
+    <hr>
+    <h2>Create Blog Post</h2>
+    <form action="/admin/create_blog_post" method="post">
+      Title:<br>
+      <input type="text" name="title" width="100"><br>
+      Body:<br>
+      <textarea name="body" rows="25" cols="100"></textarea>
+      <br>
+      <input type="submit">
+    </form>
+    <hr>
   </body>
 </html>

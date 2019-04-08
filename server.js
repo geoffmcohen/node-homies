@@ -26,6 +26,10 @@ app.use(expressSession({
   secret: sessionSecret,
 }));
 
+// Use flash notification to display messages on pages
+var flash = require('connect-flash');
+app.use(flash(app));
+
 // Connect to mongodb and fail if unable to connect
 // TODO: Move this to generic database module (?)
 var MongoClient = require('mongodb').MongoClient;
@@ -53,7 +57,7 @@ app.get('/blog', function(req, res){
       }
 
       // Display the page with the posts
-      res.render('blog.html', {blog: blog, blogPosts: blogPosts, dateformat: dateformat});
+      res.render('blog.html', {blogPosts: blogPosts, dateformat: dateformat});
   });
 });
 
@@ -61,7 +65,7 @@ app.get('/blog', function(req, res){
 app.get('/admin', function(req, res){
   if(req.session.adminUser){
     // Show the admin page
-    res.render('admin.html', {session: req.session});
+    res.render('admin.html', {session: req.session, flash: req.flash('info')});
   } else {
     // Redirect to login
     res.redirect('/admin/login')
@@ -112,6 +116,20 @@ app.get('/admin/logout', function(req, res){
     res.redirect('/admin/login');
   });
 });
+
+// Post method for creating a blog posts
+app.post('/admin/create_blog_post', function(req, res){
+  var blog = require("./modules/blog.js");
+  blogPost = {
+    title: req.body.title,
+    body: req.body.body,
+    author: req.session.adminUser,
+  };
+  blog.insertBlogPost(blogPost, function(err, result){
+    req.flash('info', 'Blog post inserted!!!');
+    res.redirect('/admin');
+  });
+})
 
 // Route all other requests to coming soon page
 app.get('*', function(req, res){

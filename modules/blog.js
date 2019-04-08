@@ -1,6 +1,7 @@
 // Function used to insert a new post into the database
-exports.insertBlogPost = function(title, body, imgLink = null, entryTime = Date.now()){
-  console.log("Publishing blog post ''%s'...", title);
+//exports.insertBlogPost = function(title, body, imgLink = null, entryTime = Date.now()){
+exports.insertBlogPost = function(blogPost, callback){
+  console.log("Publishing blog post ''%s'...", blogPost.title);
 
   // Connect to the database
   var MongoClient = require('mongodb').MongoClient;
@@ -13,16 +14,21 @@ exports.insertBlogPost = function(title, body, imgLink = null, entryTime = Date.
     }
     // Create the blog post object
     var dbo = db.db();
-    var blogPost = {title: title, body: body, entryTime: entryTime};
-    if(imgLink != null){
-      blogPost.imgLink = imgLink;
+    //var blogPost = {title: title, body: body, entryTime: entryTime};
+    if(!blogPost.entryTime) {
+      blogPost.entryTime = Date.now();
     }
+
+    // if(!imgLink != null){
+    //   blogPost.imgLink = imgLink;
+    // }
 
     // Add the blog post
     dbo.collection("blog").insertOne(blogPost, function(err, res){
       if(err) throw err;
       console.log("Successfully inerted new blog post!");
       db.close();
+      callback(err, true);
     });
   });
 }
