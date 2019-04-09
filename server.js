@@ -43,6 +43,9 @@ MongoClient.connect(mongoURI, {useNewUrlParser: true}, function(err, db){
   }
 });
 
+// Make public path available to html templates
+app.use("/public", express.static('public'));
+
 // Route blog requests to blog page
 app.get('/blog', function(req, res){
   var blog = require("./modules/blog.js");
