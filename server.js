@@ -60,7 +60,7 @@ app.get('/blog', function(req, res){
       }
 
       // Display the page with the posts
-      res.render('blog.html', {blogPosts: blogPosts, dateformat: dateformat});
+      res.render('blog.ejs', {blogPosts: blogPosts, dateformat: dateformat});
   });
 });
 
@@ -68,7 +68,7 @@ app.get('/blog', function(req, res){
 app.get('/admin', function(req, res){
   if(req.session.adminUser){
     // Show the admin page
-    res.render('admin.html', {session: req.session, flash: req.flash('info')});
+    res.render('admin.ejs', {session: req.session, flash: req.flash('info')});
   } else {
     // Redirect to login
     res.redirect('/admin/login')
@@ -136,7 +136,7 @@ app.post('/admin/create_blog_post', function(req, res){
 
 // Route all other requests to coming soon page
 app.get('*', function(req, res){
-  res.render('coming_soon.html');
+  res.render('coming_soon.ejs');
 });
 
 // Start the server
