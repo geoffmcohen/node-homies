@@ -38,8 +38,6 @@ MongoClient.connect(mongoURI, {useNewUrlParser: true}, function(err, db){
   if(err){
     console.log("Unable to connect to MongoDB!!!");
     throw err;
-  } else {
-    console.log("Succesfully connected to MongoDB.");
   }
 });
 
@@ -54,13 +52,14 @@ app.get('/blog', function(req, res){
   // Retreive the blog posts from the database
   blog.getBlogPosts(function(err, blogPosts){
       if(err){
+        // Display the error page if unable to retrieve blog posts
         console.log(err);
-        // TODO: Figure out what to send back in case of error
         res.status(500);
-      }
-
-      // Display the page with the posts
-      res.render('blog.ejs', {blogPosts: blogPosts, dateformat: dateformat});
+        res.render("error.ejs");
+      } else {
+        // Display the page with the posts
+        res.render('blog.ejs', {blogPosts: blogPosts, dateformat: dateformat});
+      };
   });
 });
 

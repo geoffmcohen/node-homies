@@ -1,5 +1,4 @@
 // Function used to insert a new post into the database
-//exports.insertBlogPost = function(title, body, imgLink = null, entryTime = Date.now()){
 exports.insertBlogPost = function(blogPost, callback){
   console.log("Publishing blog post ''%s'...", blogPost.title);
 
@@ -7,28 +6,27 @@ exports.insertBlogPost = function(blogPost, callback){
   var MongoClient = require('mongodb').MongoClient;
   var mongoURI = process.env.MONGOLAB_URI;
   MongoClient.connect(mongoURI, {useNewUrlParser: true}, function(err, db){
-    // Throw error if unable to connect
+    // Callback with error if unable to connect
     if(err){
       console.log("Unable to connect to MongoDB!!!");
-      throw err;
+      return callback(err, false);
     }
     // Create the blog post object
     var dbo = db.db();
-    //var blogPost = {title: title, body: body, entryTime: entryTime};
+
     if(!blogPost.entryTime) {
       blogPost.entryTime = Date.now();
     }
 
-    // if(!imgLink != null){
-    //   blogPost.imgLink = imgLink;
-    // }
-
     // Add the blog post
     dbo.collection("blog").insertOne(blogPost, function(err, res){
-      if(err) throw err;
-      console.log("Successfully inerted new blog post!");
-      db.close();
-      callback(err, true);
+      if(err) {
+        return callback(err, false);
+      } else {
+        console.log("Successfully inerted new blog post!");
+        db.close();
+        callback(err, true);
+      }
     });
   });
 }
@@ -40,37 +38,30 @@ exports.getBlogPosts = function(callback) {
   var MongoClient = require('mongodb').MongoClient;
   var mongoURI = process.env.MONGOLAB_URI;
   MongoClient.connect(mongoURI, {useNewUrlParser: true}, function(err, db){
-    // Throw error if unable to connect
+    // Callback with error if unable to connect
     if(err){
       console.log("Unable to connect to MongoDB!!!");
-      throw err;
+      return callback(err, null);
     }
     // Get the collection
     var dbo = db.db();
     dbo.collection("blog", function(err, coll){
       if(err){
         console.log("Unable to get collection blog!!!");
-        throw err;
+        return callback(err, null);
       }
       // Find all records sorted last to first
       coll.find({}, {sort:{entryTime: -1}}, function(err, items){
         if(err){
           console.log("Unable to execute find on blog collection");
-          throw err;
+          return callback(err, null);
         }
         // Convert the cursor to an array and return
         items.toArray(function(err, arr){
           console.log("Retreived %d blog posts", arr.length);
-          callback(err, arr);
+          return callback(err, arr);
         });
       });
     });
   });
-}
-
-//
-exports.formatBodyText = function(bodyText){
-  var body = bodyText;
-  body = body.replace('<p>', '%><p><%');
-  return body;
 }
