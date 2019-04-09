@@ -76,16 +76,10 @@ app.get('/admin', function(req, res){
 
 // Show a login form for the admin access
 app.get('/admin/login', function(req, res){
-  // TODO: Create an actual page for this and display wrong user/pass error upon auth failure
-  var response = '<form method="POST">' +
-    'Username: <input type="text" name="username"><br>' +
-    'Password: <input type="password" name="password"><br>' +
-    '<input type="submit" value="Submit"></form>';
   if(req.session.adminUser){
     res.redirect('/admin');
   } else {
-    res.type('html');
-    res.send(response);
+    res.render('admin_login.ejs', {flash: req.flash('info')});
   }
 });
 
@@ -104,6 +98,7 @@ app.post('/admin/login', function(req, res){
       req.session.regenerate(function(){
         console.log("Failed attempt to login admin user '%s.'", req.body.username );
         req.session.error = 'Authentication failed.';
+        req.flash('info', 'Authentication failed!');
         res.redirect('/admin');
       });
     }
