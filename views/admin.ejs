@@ -8,12 +8,16 @@
     <% if (flash) {%><%= flash %><% } %>
     <hr>
     <h2>Create Blog Post</h2>
-    <form action="/admin/create_blog_post" method="post">
+    <form action="/admin/create_blog_post" method="post" enctype="multipart/form-data">
       Title:<br>
       <input type="text" name="title" width="100"><br>
       Body:<br>
       <textarea name="body" rows="25" cols="100"></textarea>
       <br>
+      Image:
+      <br>
+      <input type='file' name="image_file" accept="image/*" />
+      <br><br>
       <input type="submit">
     </form>
     <hr>

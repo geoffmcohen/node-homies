@@ -7,11 +7,6 @@ var ejs = require('ejs');
 app.set('views', './views');
 app.engine('html', ejs.renderFile);
 
-// Use the body parser for POST requests
-var bodyParser = require('body-parser');
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
-
 // Use the cookie parser
 var cookieParser = require('cookie-parser');
 var cookieSecret = process.env.COOKIE_SECRET || "cookiemonsterlovecookies";
@@ -86,20 +81,33 @@ app.get('/admin/login', function(req, res){
 // Handle post request for admin login
 app.post('/admin/login', function(req, res){
   var admin = require("./modules/admin.js");
-  admin.authenticateAdminUser(req.body.username, req.body.password, function(err, authResult){
-    if(authResult){
-      req.session.regenerate(function(){
-        console.log("Admin user '%s' logged in.", req.body.username);
-        req.session.adminUser = req.body.username;
-        req.session.success = 'Authenticated as ' + req.body.username;
-        res.redirect('/admin');
-      });
+
+  var util = require('util');
+  var formidable = require('formidable');
+  var form = new formidable.IncomingForm();
+
+  form.parse(req, function(err, fields, files){
+    if(err) {
+      console.log(err);
+      res.status(500);
+      res.render("error.ejs");
     } else {
-      req.session.regenerate(function(){
-        console.log("Failed attempt to login admin user '%s.'", req.body.username );
-        req.session.error = 'Authentication failed.';
-        req.flash('info', 'Authentication failed!');
-        res.redirect('/admin');
+      admin.authenticateAdminUser(fields.username, fields.password, function(err, authResult){
+        if(authResult){
+          req.session.regenerate(function(){
+            console.log("Admin user '%s' logged in.", fields.username);
+            req.session.adminUser = fields.username;
+            req.session.success = 'Authenticated as ' + fields.username;
+            res.redirect('/admin');
+          });
+        } else {
+          req.session.regenerate(function(){
+            console.log("Failed attempt to login admin user '%s.'", fields.username );
+            req.session.error = 'Authentication failed.';
+            req.flash('info', 'Authentication failed!');
+            res.redirect('/admin');
+          });
+        }
       });
     }
   });
@@ -116,17 +124,33 @@ app.get('/admin/logout', function(req, res){
 
 // Post method for creating a blog posts
 app.post('/admin/create_blog_post', function(req, res){
-  var blog = require("./modules/blog.js");
-  blogPost = {
-    title: req.body.title,
-    body: req.body.body,
-    author: req.session.adminUser,
-  };
-  blog.insertBlogPost(blogPost, function(err, result){
-    req.flash('info', 'Blog post inserted!!!');
-    res.redirect('/admin');
+  var util = require('util');
+  var formidable = require('formidable');
+  var form = new formidable.IncomingForm();
+  var blogPost = {author: req.session.adminUser};
+
+  form.on('file', function(field, file){
+    blogPost.image_file = file.path;
   });
-})
+
+  form.on('field', function(field, value){
+    blogPost[field] = value;
+  });
+
+  form.on('end', function(){
+    var blog = require("./modules/blog.js");
+    blog.insertBlogPost(blogPost, function(err, result){
+      if(err){
+        req.flash('info', 'Blog post insert failed!');
+      } else {
+        req.flash('info', 'Blog post inserted!!!');
+      }
+     res.redirect('/admin');
+    });
+  });
+
+  form.parse(req);
+});
 
 // Route all other requests to coming soon page
 app.get('*', function(req, res){
