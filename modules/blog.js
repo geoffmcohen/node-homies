@@ -20,17 +20,23 @@ exports.insertBlogPost = function(blogPost, callback){
 
     // Check if the post has an image that needs to uploaded first
     if(blogPost.image_file){
+      console.log("Attempting to upload image file '%s'...", blogPost.image_file);
       // TODO: We should probably add some real validation to make sure the image is legit
       // Upload the image first
       var cloudinary = require('cloudinary');
-      //cloudinary.uploader.upload(blogPost.image_file, function(result){
-      cloudinary.v2.uploader.upload(blogPost.image_file, function(err, result){
+      cloudinary.v2.uploader.upload(blogPost.image_file, {folder: "blog"}, function(err, result){
         if(err){
           console.log("Image failed to upload");
           console.log(err);
           return callback(err, false);
         }
-        // TODO: Delete the temp files
+
+        // Delete the local temp image file
+        fs = require('fs');
+        fs.unlink(blogPost.image_file, function(err){
+          console.log("Unable to remove file '%s'", blogPost.image_file);
+          console.log(err);
+        });
 
         // Get the image url
         blogPost.image_url = result.url;
@@ -92,7 +98,7 @@ exports.getBlogPosts = function(callback) {
         }
         // Convert the cursor to an array and return
         items.toArray(function(err, arr){
-          console.log("Retreived %d blog posts", arr.length);
+          console.log("Retrieved %d blog posts", arr.length);
           return callback(err, arr);
         });
       });

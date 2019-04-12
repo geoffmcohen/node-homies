@@ -124,13 +124,13 @@ app.get('/admin/logout', function(req, res){
 
 // Post method for creating a blog posts
 app.post('/admin/create_blog_post', function(req, res){
-  var util = require('util');
+  //var util = require('util');
   var formidable = require('formidable');
   var form = new formidable.IncomingForm();
   var blogPost = {author: req.session.adminUser};
 
   form.on('file', function(field, file){
-    blogPost.image_file = file.path;
+    if(file.size > 0) blogPost.image_file = file.path;
   });
 
   form.on('field', function(field, value){
