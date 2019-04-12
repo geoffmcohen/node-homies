@@ -26,3 +26,13 @@ body {
 .blog-body {
   margin: 5px;
 }
+
+.blog-image {
+  padding: 15px;
+}
+
+.blog-image > img {
+  border: 1px solid lightgrey;
+  width: 100%;
+  height: auto;
+}
