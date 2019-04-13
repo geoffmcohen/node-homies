@@ -73,7 +73,7 @@ exports.insertBlogPost = function(blogPost, callback){
 
 // Function to retrieve blog posts
 // TODO: Add paging as inputs to this function
-exports.getBlogPosts = function(callback) {
+exports.getBlogPosts = function(input, callback) {
   // Connect to the database
   var MongoClient = require('mongodb').MongoClient;
   var mongoURI = process.env.MONGOLAB_URI;
@@ -96,10 +96,20 @@ exports.getBlogPosts = function(callback) {
           console.log("Unable to execute find on blog collection");
           return callback(err, null);
         }
-        // Convert the cursor to an array and return
+
+        // Get paged data
+        items = items.skip(input.postsPerPage * (input.page - 1)).limit(input.postsPerPage);
+
+        // Convert the cursor to an array
         items.toArray(function(err, arr){
-          console.log("Retrieved %d blog posts", arr.length);
-          return callback(err, arr);
+          // Create return JSON with the array and information about paging
+          var ret = {blogPosts: arr, pageInfo: {currentPage: parseInt(input.page)}};
+
+          // Perform a count to determine how many pages total
+          coll.countDocuments(function(err, count){
+            ret.pageInfo.pageCount = Math.ceil(count / input.postsPerPage);
+            return callback(err, ret);
+          });
         });
       });
     });

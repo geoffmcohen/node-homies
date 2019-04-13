@@ -36,3 +36,17 @@ body {
   width: 100%;
   height: auto;
 }
+
+.blog-pagination {
+  font-size: 125%;
+  text-align: center;
+}
+
+.blog-pagination > a {
+  text-decoration: none;
+  padding: 3px;
+  border: 1px solid black;
+}
+.blog-pagination > a:hover {
+  font-weight: bold;
+}

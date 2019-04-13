@@ -44,16 +44,25 @@ app.get('/blog', function(req, res){
   var blog = require("./modules/blog.js");
   var dateformat = require('dateformat');
 
+  // Select the page
+  var input = {postsPerPage: 3, page: 1};
+  if(req.query.page) input.page = req.query.page;
+
   // Retreive the blog posts from the database
-  blog.getBlogPosts(function(err, blogPosts){
+  blog.getBlogPosts(input, function(err, result){
       if(err){
         // Display the error page if unable to retrieve blog posts
         console.log(err);
         res.status(500);
         res.render("error.ejs");
       } else {
+        console.log(result.pageInfo);
         // Display the page with the posts
-        res.render('blog.ejs', {blogPosts: blogPosts, dateformat: dateformat});
+        res.render('blog.ejs', {
+          blogPosts: result.blogPosts,
+          pageInfo: result.pageInfo,
+          dateformat: dateformat,
+        });
       };
   });
 });

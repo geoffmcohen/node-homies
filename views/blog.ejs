@@ -20,5 +20,26 @@
     <%
       }
     %>
+    <div class="blog-pagination">
+      <%
+        if(pageInfo.currentPage == 1){
+          %>&lt&lt&nbsp&lt&nbsp<%
+        } else {
+          %><a href="/blog?page=1">&lt&lt</a>&nbsp<a href="/blog?page=<%= pageInfo.currentPage-1 %>">&lt</a>&nbsp<%
+        }
+        for (var i = 1; i <= pageInfo.pageCount; i++) {
+          if(i == pageInfo.currentPage) {
+            %><%= i %>&nbsp<%
+          } else {
+            %><a href="/blog?page=<%= i %>"><%= i %></a>&nbsp<%
+          }
+        }
+        if(pageInfo.currentPage == pageInfo.pageCount) {
+          %>&gt&nbsp&gt&gt&nbsp<%
+        } else {
+          %><a href="/blog?page=<%= pageInfo.currentPage+1 %>">&gt</a>&nbsp<a href="/blog?page=<%= pageInfo.pageCount %>">&gt&gt</a>&nbsp<%
+        }
+      %>
+    </div>
   </body>
 </html>
