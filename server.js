@@ -56,7 +56,6 @@ app.get('/blog', function(req, res){
         res.status(500);
         res.render("error.ejs");
       } else {
-        console.log(result.pageInfo);
         // Display the page with the posts
         res.render('blog.ejs', {
           blogPosts: result.blogPosts,
@@ -65,6 +64,9 @@ app.get('/blog', function(req, res){
         });
       };
   });
+
+  // Increment the page count for blog
+  require('./modules/page-counter.js').incrementPageCount("blog", function(err, result){});
 });
 
 // Route to the admin pages
@@ -72,6 +74,8 @@ app.get('/admin', function(req, res){
   if(req.session.adminUser){
     // Show the admin page
     res.render('admin.ejs', {session: req.session, flash: req.flash('info')});
+    // Increment the page count for blog
+    require('./modules/page-counter.js').incrementPageCount("admin", function(err, result){});
   } else {
     // Redirect to login
     res.redirect('/admin/login')
@@ -164,6 +168,7 @@ app.post('/admin/create_blog_post', function(req, res){
 // Route all other requests to coming soon page
 app.get('*', function(req, res){
   res.render('coming_soon.ejs');
+  require('./modules/page-counter.js').incrementPageCount("coming_soon", function(err, result){});
 });
 
 // Start the server
