@@ -39,6 +39,10 @@ MongoClient.connect(mongoURI, {useNewUrlParser: true}, function(err, db){
 // Make public path available to html templates
 app.use("/public", express.static('public'));
 
+// Make the favicon available
+var favicon = require('serve-favicon');
+app.use(favicon('./public/img/vh_favicon.ico'));
+
 // Route blog requests to blog page
 app.get('/blog', function(req, res){
   var blog = require("./modules/blog.js");
@@ -72,8 +76,16 @@ app.get('/blog', function(req, res){
 // Route to the admin pages
 app.get('/admin', function(req, res){
   if(req.session.adminUser){
-    // Show the admin page
-    res.render('admin.ejs', {session: req.session, flash: req.flash('info')});
+    require('./modules/page-counter.js').getPageCounts(function(err, pageCounts){
+      if(err) pageCounts = [];
+      // Show the admin page
+      res.render('admin.ejs', {
+        session: req.session,
+        flash: req.flash('info'),
+        pageCounts: pageCounts,
+      });
+    });
+
     // Increment the page count for blog
     require('./modules/page-counter.js').incrementPageCount("admin", function(err, result){});
   } else {

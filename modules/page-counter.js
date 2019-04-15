@@ -47,3 +47,29 @@ exports.incrementPageCount = function(pageName, callback){
     });
   });
 }
+
+// Retreives the page counts for display
+exports.getPageCounts = function(callback){
+  // Connect to the database
+  var MongoClient = require('mongodb').MongoClient;
+  var mongoURI = process.env.MONGOLAB_URI;
+  MongoClient.connect(mongoURI, {useNewUrlParser: true}, function(err, db){
+    // Callback with error if unable to connect
+    if(err){
+      console.log("Unable to connect to MongoDB!!!");
+      console.log(err);
+      return callback(err, false);
+    }
+    var dbo = db.db();
+    dbo.collection("pageCount").find({}, {sort: {pageName: 1}}, function(err, results){
+      if(err){
+        console.log("Unable to retrieve page counts");
+        console.log(err);
+        return callback(err, null);
+      }
+      results.toArray(function(err, arr){
+        return callback(err, arr);
+      });
+    });
+  });
+}

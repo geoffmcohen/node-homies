@@ -2,6 +2,8 @@
 <html lang="en">
   <head>
     <title>Vegan Homies Admin Page</title>
+    <link rel="stylesheet" href="/public/css/admin.css">
+
   </head>
   <body>
     <h1>Welcome to the Admin Page, <%= session.adminUser %></h1>
@@ -20,6 +22,21 @@
       <br><br>
       <input type="submit">
     </form>
+    <hr>
+    <h2>Page Counts</h2>
+    <table>
+      <tr>
+        <th><h3>Page Name</h3></th>
+        <th><h3>Count</h3></th>
+      </tr>
+      <%
+      for(var pageCount of pageCounts){
+        %>
+        <tr><th><%= pageCount.pageName %></th><th><%= pageCount.count %></th></tr>
+        <%
+      }
+      %>
+    </table>
     <hr>
   </body>
 </html>

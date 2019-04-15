@@ -1,0 +1,8 @@
+html * {
+  font-family: Courier New;
+}
+
+table, th, td {
+  border: 1px solid darkgrey;
+  text-align: left;
+}

@@ -15,7 +15,8 @@
     "express-session": "^1.15.6",
     "formidable": "^1.2.1",
     "mongodb": "^3.2.2",
-    "node-gyp": "^3.8.0"
+    "node-gyp": "^3.8.0",
+    "serve-favicon": "^2.5.0"
   },
   "devDependencies": {},
   "scripts": {
